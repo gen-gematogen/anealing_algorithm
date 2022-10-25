@@ -1,14 +1,6 @@
 #include "anealing.h"
 
 namespace anealing{
-    struct data{
-        size_t num_cpu;
-        size_t num_task;
-        std::unordered_map<size_t, size_t> exec_time;
-
-        data() : num_cpu(), num_task() {}
-    };
-
     data read_data(std::string &&input_file){
         std::ifstream file;
 
