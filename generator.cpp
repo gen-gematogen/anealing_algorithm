@@ -9,8 +9,6 @@ namespace anealing
             return;
         }
 
-        srand(time(0));
-
         std::vector<size_t> times(num_task);
 
         for (int i = 0; i < num_task; ++i)

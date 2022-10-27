@@ -40,14 +40,14 @@ namespace anealing
     class Mutation_abstr
     {
     public:
-        virtual Schedule_ transform(const Schedule_ &cur_schedule) = 0;
+        virtual Schedule_ transform(Schedule_ cur_schedule) = 0;
     };
 
     template <class T>
     class Mutation : public Mutation_abstr<T>
     {
     public:
-        T transform(const T &cur_schedule)
+        T transform(T cur_schedule)
         {
             // mutation operation - move task from one cpu to another
             if (cur_schedule.get_proc_num() < 2)
@@ -55,35 +55,42 @@ namespace anealing
                 return cur_schedule;
             }
 
-            size_t proc = rand() % cur_schedule.get_proc_num();
-            auto cur_cpu = cur_schedule.get_proc_tasks(proc);
+            // T next_schedule;
 
-            while (!cur_cpu.size())
+            for (int i = 0; i < 5; ++i)
             {
-                proc = rand() % cur_schedule.get_proc_num();
-                cur_cpu = cur_schedule.get_proc_tasks(proc);
+
+                size_t proc = rand() % cur_schedule.get_proc_num();
+                auto cur_cpu = cur_schedule.get_proc_tasks(proc);
+
+                while (!cur_cpu.size())
+                {
+                    proc = rand() % cur_schedule.get_proc_num();
+                    cur_cpu = cur_schedule.get_proc_tasks(proc);
+                }
+
+                auto new_schedule = cur_schedule.get_schedule();
+                size_t pos_to_move = rand() % cur_cpu.size();
+                size_t task = new_schedule[proc][pos_to_move];
+
+                new_schedule[proc].erase(new_schedule[proc].begin() + pos_to_move);
+
+                size_t new_proc = rand() % cur_schedule.get_proc_num();
+
+                while (new_proc == proc)
+                {
+                    new_proc = rand() % cur_schedule.get_proc_num();
+                }
+
+                new_schedule[new_proc].push_back(task);
+
+                // next_schedule = cur_schedule;
+
+                // next_schedule.set_schedule(new_schedule);
+                cur_schedule.set_schedule(new_schedule);
             }
 
-            auto new_schedule = cur_schedule.get_schedule();
-            size_t pos_to_move = rand() % cur_cpu.size();
-            size_t task = new_schedule[proc][pos_to_move];
-
-            new_schedule[proc].erase(new_schedule[proc].begin() + pos_to_move);
-
-            size_t new_proc = rand() % cur_schedule.get_proc_num();
-
-            while (new_proc == proc)
-            {
-                new_proc = rand() % cur_schedule.get_proc_num();
-            }
-
-            new_schedule[new_proc].push_back(task);
-
-            T next_schedule = cur_schedule;
-
-            next_schedule.set_schedule(new_schedule);
-
-            return next_schedule;
+            return cur_schedule;
         }
     };
 
@@ -140,12 +147,11 @@ namespace anealing
         size_t temp_it_;
         T start_schedule_;
 
-        size_t best_time_ = UINT32_MAX;
+        size_t best_time_;
         T best_schedule_;
 
     public:
-        Anealing(double start_temp, size_t temp_law, size_t it_without_change, size_t temp_it, T &start_schedule) : 
-                start_temp_(start_temp), temp_law_(temp_law), it_without_change_(it_without_change), temp_it_(temp_it), start_schedule_(start_schedule) {}
+        Anealing(double start_temp, size_t temp_law, size_t it_without_change, size_t temp_it, T &start_schedule) : start_temp_(start_temp), temp_law_(temp_law), it_without_change_(it_without_change), temp_it_(temp_it), start_schedule_(start_schedule) {}
 
         T mainloop()
         {
@@ -161,6 +167,9 @@ namespace anealing
             T cur_schedule = start_schedule_;
             size_t cur_time = cur_schedule.get_time();
             Mutation<T> mutator;
+
+            best_schedule_ = start_schedule_;
+            best_time_ = start_schedule_.get_time();
 
             while (cur_it_without_change < it_without_change_)
             {
@@ -188,7 +197,9 @@ namespace anealing
 
                         double prob = (double)rand() / RAND_MAX;
 
-                        if (prob <= exp((double)(cur_time - new_time) / cur_temp))
+                        std::cout << exp(((double)cur_time - new_time) / cur_temp) << '\n';
+
+                        if (prob < exp((double)(cur_time - new_time) / cur_temp))
                         {
                             cur_time = new_time;
                             cur_schedule = new_schedule;
@@ -214,6 +225,21 @@ namespace anealing
             for (int i = 0; i < num_task; ++i)
             {
                 task_on_cpu[rand() % num_cpu].push_back(i);
+            }
+
+            T start_schedule(num_cpu, exec_time);
+            start_schedule.set_schedule(task_on_cpu);
+
+            return start_schedule;
+        }
+
+        T generate_dummy_schedule(int num_cpu, int num_task, std::unordered_map<size_t, size_t> &exec_time)
+        {
+            std::vector<std::vector<size_t>> task_on_cpu(num_cpu);
+
+            for (int i = 0; i < num_task; ++i)
+            {
+                task_on_cpu[0].push_back(i);
             }
 
             T start_schedule(num_cpu, exec_time);

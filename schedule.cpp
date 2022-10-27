@@ -23,8 +23,12 @@ namespace anealing
                 cur_time += task_time_[task];
             }
 
+            //std::cout << cur_time << ' ';
+
             time = std::max(time, cur_time);
         }
+
+        //std::cout << '\n';
 
         return time;
     }
