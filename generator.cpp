@@ -13,7 +13,7 @@ namespace anealing
 
         for (int i = 0; i < num_task; ++i)
         {
-            times[i] = rand() % (max_duration - min_duration) + min_duration;
+            times[i] = rand() % (max_duration - min_duration + 1) + min_duration;
         }
 
         std::ofstream out_f;

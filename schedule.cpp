@@ -23,12 +23,12 @@ namespace anealing
                 cur_time += task_time_[task];
             }
 
-            //std::cout << cur_time << ' ';
+            // std::cout << cur_time << ' ';
 
             time = std::max(time, cur_time);
         }
 
-        //std::cout << '\n';
+        // std::cout << '\n';
 
         return time;
     }
@@ -36,6 +36,36 @@ namespace anealing
     size_t Schedule::get_proc_num() const
     {
         return cpu_cnt_;
+    }
+
+    std::vector<size_t> Schedule::task_per_cpu() const
+    {
+        std::vector<size_t> task_cpu;
+
+        for (int i = 0; i < cpu_cnt_; ++i)
+        {
+            task_cpu.push_back(schedule_[i].size());
+        }
+
+        return task_cpu;
+    }
+
+    std::vector<size_t> Schedule::time_per_cpu()
+    {
+        std::vector<size_t> task_cpu;
+
+        for (auto& cpu:  schedule_)
+        {
+            size_t cnt{0};
+
+            for (auto task : cpu){
+                cnt += task_time_[task];
+            }
+
+            task_cpu.push_back(cnt);
+        }
+
+        return task_cpu;
     }
 
     std::vector<size_t> Schedule::get_proc_tasks(size_t proc) const

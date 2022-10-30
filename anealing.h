@@ -21,6 +21,8 @@ namespace anealing
         virtual size_t get_proc_num() const = 0;
         virtual std::vector<size_t> get_proc_tasks(size_t proc) const = 0;
         virtual std::vector<std::vector<size_t>> get_schedule() const = 0;
+        virtual std::vector<size_t> task_per_cpu() const = 0;
+        virtual std::vector<size_t> time_per_cpu() = 0;
         virtual void set_schedule(std::vector<std::vector<size_t>> &schedule) = 0;
     };
 
@@ -33,6 +35,8 @@ namespace anealing
         size_t get_proc_num() const;
         std::vector<size_t> get_proc_tasks(size_t proc) const;
         std::vector<std::vector<size_t>> get_schedule() const;
+        std::vector<size_t> task_per_cpu() const;
+        std::vector<size_t> time_per_cpu();
         void set_schedule(std::vector<std::vector<size_t>> &schedule);
     };
 
@@ -183,23 +187,44 @@ namespace anealing
 
                     size_t new_time = new_schedule.get_time();
 
-                    if (new_time < best_time_)
+                    if (new_time < cur_time)
                     {
-                        best_time_ = new_time;
-                        best_schedule_ = new_schedule;
-                        cur_schedule = new_schedule;
+                        // best_time_ = new_time;
+                        // best_schedule_ = new_schedule;
+                        // cur_schedule = new_schedule;
+                        // cur_time = new_time;
+                        // cur_it_without_change = 0;
+                        if (new_time < best_time_)
+                        {
+                            cur_it_without_change = 0;
+                            best_time_ = new_time;
+                            best_schedule_ = new_schedule;
+                        }
+
                         cur_time = new_time;
-                        cur_it_without_change = 0;
+                        cur_schedule = new_schedule;
                     }
                     else
                     {
                         cur_it_without_change++;
 
+                        if (cur_time == new_time){
+                            continue;
+                        }
+
                         double prob = (double)rand() / RAND_MAX;
 
-                        std::cout << exp(((double)cur_time - new_time) / cur_temp) << '\n';
+                        // std::cout << exp(((double)cur_time - new_time) / cur_temp) << '\n';
 
-                        if (prob < exp((double)(cur_time - new_time) / cur_temp))
+                        // if (prob < exp((double)(cur_time - new_time) / cur_temp))
+                        // {
+                        //     cur_time = new_time;
+                        //     cur_schedule = new_schedule;
+                        // }
+
+                        double d = (double)new_time - cur_time;
+
+                        if (prob < exp(-d / cur_temp))
                         {
                             cur_time = new_time;
                             cur_schedule = new_schedule;
