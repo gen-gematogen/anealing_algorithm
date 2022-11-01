@@ -6,6 +6,9 @@
 #include <type_traits>
 #include <fstream>
 #include <string>
+#include <thread>
+#include <mutex>
+#include <future>
 
 namespace anealing
 {
@@ -38,6 +41,8 @@ namespace anealing
         std::vector<size_t> task_per_cpu() const;
         std::vector<size_t> time_per_cpu();
         void set_schedule(std::vector<std::vector<size_t>> &schedule);
+
+        bool operator==(const Schedule& second) const;
     };
 
     template <class Schedule_>
@@ -157,11 +162,11 @@ namespace anealing
     public:
         Anealing(double start_temp, size_t temp_law, size_t it_without_change, size_t temp_it, T &start_schedule) : start_temp_(start_temp), temp_law_(temp_law), it_without_change_(it_without_change), temp_it_(temp_it), start_schedule_(start_schedule) {}
 
-        T mainloop()
+        void mainloop(T& global_best_schedule, std::mutex& mtx)
         {
             if (start_schedule_.get_proc_num() < 2)
             {
-                return start_schedule_;
+                return;
             }
 
             int cur_it_without_change{0};
@@ -214,14 +219,6 @@ namespace anealing
 
                         double prob = (double)rand() / RAND_MAX;
 
-                        // std::cout << exp(((double)cur_time - new_time) / cur_temp) << '\n';
-
-                        // if (prob < exp((double)(cur_time - new_time) / cur_temp))
-                        // {
-                        //     cur_time = new_time;
-                        //     cur_schedule = new_schedule;
-                        // }
-
                         double d = (double)new_time - cur_time;
 
                         if (prob < exp(-d / cur_temp))
@@ -233,7 +230,14 @@ namespace anealing
                 }
             }
 
-            return best_schedule_;
+
+            mtx.lock();
+            if (global_best_schedule.get_time() > best_schedule_.get_time()){
+                global_best_schedule = best_schedule_;
+            }
+            mtx.unlock();
+
+            //return best_schedule_;
         }
     };
 

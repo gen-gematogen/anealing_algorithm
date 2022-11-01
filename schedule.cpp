@@ -147,4 +147,8 @@ namespace anealing
             return logdiv_law.temprature_step(iteration);
         }
     }
+
+    bool Schedule::operator==(const Schedule& second) const{
+        return std::tie(cpu_cnt_, schedule_, task_time_) == std::tie(second.cpu_cnt_, second.schedule_, second.task_time_);
+    }
 }
