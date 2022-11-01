@@ -1,0 +1,58 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+% \usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage[left=15mm, right=15mm]{geometry}
+
+% Set page size and margins
+% Replace `letterpaper' with`a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{Задание по алгоритму имитации отжига}
+\author{Шутков Геннадий}
+
+\begin{document}
+\maketitle
+
+\section{Формальная постановка задачи}
+
+\subsection{Основные понятия}
+
+\emph{Расписание} - упорядочение всех работ из множества $\{w_i\}_{i=1}^{N}$ по процессорам из множества $\{p_j\}_{j=1}^{M}$. Где каждой работе сопоставляется процессор, и момент начала выполнения работы на нем.
+\\
+\emph{Длительность расписания} - момент времени $T = \max(t_i)$, где $t_i$ - момент времени завершения последней работы на процессоре i.
+
+\subsection{Формальная постановка}
+
+
+\textbf{Дано}: 
+
+\begin{itemize}
+    \item Набор работ из N элементов.
+    \item Набор процессоров из M элементов.
+    \item Для каждой работы, время ее выполнения на процессоре.
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Требуется}: Построить расписание выполнения работ на процессорах.\\
+То есть, определить привязку каждой работы к процессору и порядок выполнения работ на каждом из процессоров.
+
+\vspace{0.5cm}
+
+\textbf{Минимизируемый критерий}: Длительность расписания, т.е. время завершения последней работы.
+
+
+\end{document}
